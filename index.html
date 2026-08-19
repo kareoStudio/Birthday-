@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Coder Buddy! 🎂</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Fredoka:wght@400;600;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+      background: #0f172a;
+      color: #f8fafc;
+    }
+    
+    .font-code { font-family: 'Fira Code', monospace; }
+    .font-fun { font-family: 'Fredoka', cursive; }
+
+    /* Custom Gradient Animation */
+    .bg-gradient-animated {
+      background: linear-gradient(-45deg, #0f172a, #1e1b4b, #311042, #022c22);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Cake & Flame Animations */
+    .flame {
+      transform-origin: center bottom;
+      animation: flicker 0.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes flicker {
+      0% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+      50% { transform: scale(1.1) rotate(2deg); opacity: 1; filter: drop-shadow(0 0 12px #f97316); }
+      100% { transform: scale(0.95) rotate(-1deg); opacity: 0.85; }
+    }
+
+    .smoke {
+      animation: riseSmoke 1.5s ease-out forwards;
+    }
+
+    @keyframes riseSmoke {
+      0% { opacity: 0.8; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-30px) scale(2.5); }
+    }
+
+    /* Floating Balloons */
+    .balloon {
+      position: absolute;
+      bottom: -100px;
+      animation: floatUp 12s linear infinite;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .balloon:hover {
+      transform: scale(1.15);
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-50vh) rotate(10deg); }
+      100% { transform: translateY(-110vh) rotate(-10deg); }
+    }
+
+    /* Glassmorphism Cards */
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Neon Glow Text */
+    .neon-text {
+      text-shadow: 0 0 10px rgba(236, 72, 153, 0.7), 0 0 20px rgba(168, 85, 247, 0.5);
+    }
+  </style>
+</head>
+<body class="bg-gradient-animated min-h-screen text-slate-100 flex flex-col justify-between relative overflow-x-hidden">
+
+  <div id="balloon-container" class="fixed inset-0 pointer-events-none z-10 overflow-hidden"></div>
+
+  <header class="w-full p-4 md:p-6 flex justify-between items-center z-20 max-w-6xl mx-auto">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center font-bold text-xl shadow-lg shadow-pink-500/30">
+        <i class="fa-solid font-code">&lt;/&gt;</i>
+      </div>
+      <div>
+        <h1 class="font-fun text-xl md:text-2xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+          BIRTHDAY.exe
+        </h1>
+        <p class="text-xs text-slate-400 font-code">Status: 200 OK (New Days Unlocked)</p>
+      </div>
+    </div>
+
+    <!-- Quick Settings Controls -->
+    <div class="flex items-center gap-3">
+      <button id="sound-btn" onclick="toggleAudio()" class="px-4 py-2 rounded-xl glass-card hover:bg-slate-700/60 transition flex items-center gap-2 text-sm border border-slate-700">
+        <i id="sound-icon" class="fa-solid fa-volume-xmark text-pink-400"></i>
+        <span id="sound-text" class="hidden sm:inline">Play BGM</span>
+      </button>
+      <button onclick="openNameModal()" class="px-3 py-2 rounded-xl glass-card hover:bg-slate-700/60 transition text-sm border border-slate-700 text-purple-300" title="Change Friend Name">
+        <i class="fa-solid fa-user-pen"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-6 z-20 flex-1 flex flex-col items-center justify-center w-full">
+    
+    <!-- Code Banner Badges -->
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-950/60 border border-purple-500/30 text-purple-300 text-xs md:text-sm font-code mb-6 animate-pulse">
+      <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+      System Notice: Birthday Celebration Mode!
+    </div>
+
+    <!-- Main Title -->
+    <div class="text-center mb-8">
+      <h2 class="font-fun text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight mb-3">
+        Happy Birthday, <span id="friend-name-display" class="bg-gradient-to-r from-pink-500 via-purple-400 to-cyan-400 bg-clip-text text-transparent neon-text">Himanshu Sharma</span>! 🎉
+      </h2>
+      <p class="text-slate-300 font-code text-sm sm:text-base max-w-xl mx-auto">
+        /* BCA 1st Sem Loaded! Wish you bug-free C programming, 100% attendance & unlimited canteen chai! */
+      </p>
+    </div>
+
+    <div class="glass-card p-6 md:p-8 rounded-3xl shadow-2xl flex flex-col items-center relative max-w-md w-full border border-purple-500/20 mb-10">
+      
+      <!-- Interactive Helper Tip -->
+      <p id="cake-instruction" class="text-xs font-code text-pink-300 mb-6 bg-pink-950/50 px-3 py-1.5 rounded-full border border-pink-500/30 text-center animate-bounce">
+        <i class="fa-solid fa-hand-pointer mr-1"></i> Tap candles to blow flame, then cut the cake!
+      </p>
+
+      <!-- SVG Birthday Cake -->
+      <div class="relative cursor-pointer my-4 group select-none" onclick="triggerConfetti()">
+        
+        <!-- Candles Grid -->
+        <div class="absolute -top-12 left-0 right-0 flex justify-center items-end gap-5 z-20">
+          
+          <!-- Candle 1 -->
+          <div class="flex flex-col items-center group/candle" onclick="blowCandle(1, event)">
+            <div id="flame-1" class="flame w-4 h-6 bg-gradient-to-t from-red-500 via-orange-400 to-yellow-200 rounded-full shadow-lg shadow-orange-500/80 mb-0.5"></div>
+            <div id="smoke-1" class="hidden absolute -top-6 w-3 h-3 bg-slate-400 rounded-full smoke"></div>
+            <div class="w-2.5 h-10 bg-gradient-to-b from-pink-400 to-purple-500 rounded-t-sm shadow-inner"></div>
+          </div>
+
+          <!-- Candle 2 (Center) -->
+          <div class="flex flex-col items-center group/candle" onclick="blowCandle(2, event)">
+            <div id="flame-2" class="flame w-4 h-6 bg-gradient-to-t from-red-500 via-orange-400 to-yellow-200 rounded-full shadow-lg shadow-orange-500/80 mb-0.5"></div>
+            <div id="smoke-2" class="hidden absolute -top-6 w-3 h-3 bg-slate-400 rounded-full smoke"></div>
+            <div class="w-2.5 h-12 bg-gradient-to-b from-cyan-400 to-blue-500 rounded-t-sm shadow-inner"></div>
+          </div>
+
+          <!-- Candle 3 -->
+          <div class="flex flex-col items-center group/candle" onclick="blowCandle(3, event)">
+            <div id="flame-3" class="flame w-4 h-6 bg-gradient-to-t from-red-500 via-orange-400 to-yellow-200 rounded-full shadow-lg shadow-orange-500/80 mb-0.5"></div>
+            <div id="smoke-3" class="hidden absolute -top-6 w-3 h-3 bg-slate-400 rounded-full smoke"></div>
+            <div class="w-2.5 h-10 bg-gradient-to-b from-amber-400 to-orange-500 rounded-t-sm shadow-inner"></div>
+          </div>
+        </div>
+
+        <!-- Animated SVG Cake Graphic -->
+        <svg width="220" height="150" viewBox="0 0 220 150" fill="none" xmlns="http://www.w3.org/2000/svg" class="filter drop-shadow-xl transition-transform transform group-hover:scale-105 duration-300">
+          <!-- Top Layer Icing -->
+          <path d="M20 70 C 20 60, 200 60, 200 70 L 200 90 C 180 100, 160 80, 140 95 C 120 105, 100 85, 80 95 C 60 105, 40 85, 20 90 Z" fill="#ec4899" />
+          <!-- Cake Base Layer -->
+          <rect x="25" y="85" width="170" height="45" rx="8" fill="#a855f7" />
+          <rect x="25" y="105" width="170" height="8" fill="#818cf8" />
+          <!-- Plate Base -->
+          <ellipse cx="110" cy="135" rx="100" ry="12" fill="#334155" />
+          <!-- Cake Cherries/Sprinkles -->
+          <circle cx="45" cy="72" r="4" fill="#facc15" />
+          <circle cx="85" cy="75" r="4" fill="#38bdf8" />
+          <circle cx="135" cy="75" r="4" fill="#4ade80" />
+          <circle cx="175" cy="72" r="4" fill="#f43f5e" />
+        </svg>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap gap-3 mt-4 w-full justify-center">
+        <button onclick="cutCake()" class="flex-1 py-3 px-6 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold shadow-lg shadow-pink-500/25 transition transform active:scale-95 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-cake-candles"></i> Cut The Cake!
+        </button>
+        <button onclick="triggerConfetti()" class="py-3 px-4 rounded-2xl glass-card hover:bg-slate-700 text-yellow-300 font-bold border border-yellow-500/30 transition transform active:scale-95" title="Blast Confetti">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mb-10">
+      
+      <!-- Developer Patch Notes (BCA Parody) -->
+      <div class="glass-card p-6 rounded-3xl border border-slate-700 relative overflow-hidden">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-700/80">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
+            <span class="text-xs font-code text-slate-400 ml-2">BCA_Sem1_Release_Notes.log</span>
+          </div>
+          <span class="text-xs font-code px-2 py-0.5 rounded bg-purple-900/50 text-purple-300 border border-purple-700">v1.0 SEM 1</span>
+        </div>
+        
+        <h3 class="text-lg font-bold font-fun text-purple-300 mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-code-commit text-pink-400"></i> Himanshu - 1st Sem Patch Upgrades
+        </h3>
+        
+        <ul class="space-y-2.5 text-xs sm:text-sm font-code text-slate-300">
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-400 font-bold">+</span>
+            <span><b>C Language Skills:</b> Syntax errors handled & Logic ++</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-400 font-bold">+</span>
+            <span><b>Attendance Status:</b> 75% Criteria successfully maintained!</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-pink-400 font-bold">-</span>
+            <span><b>Bugs Fixed:</b> 1st Sem Mid-Term & Practical Exam Stress Removed!</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-cyan-400 font-bold">★</span>
+            <span><b>New Perk:</b> Unlocked "Best Coder & Canteen Partner" Title!</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Heartfelt Friend Wish Card -->
+      <div class="glass-card p-6 rounded-3xl border border-slate-700 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center font-bold text-lg">
+              <i class="fa-solid fa-heart"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-100">Himanshu Bhai Ke Liye Message</h3>
+              <p class="text-xs text-slate-400">From your 1st Sem BCA Benchmate & Buddy</p>
+            </div>
+          </div>
+          <p class="text-sm text-slate-300 leading-relaxed italic mb-4">
+            "Himanshu bhai, 1st semester me college aate hi tere jaisa mast dost mil gya ! Aur Phla First Prize bhi mil gya .  Subha ki Good morning se assignment copy karne tak, aur canteen ki chai se lekar bunk plan karne tak —1st sem me hi apni dosti ekdam solid ho gayi hai. Is 1st semester me aur aane wale saare sem me milkar machana hai! Happy Birthday Himanshu Sharma! 🎉"
+          </p>
+        </div>
+        
+        <div class="pt-3 border-t border-slate-700/80 flex justify-between items-center text-xs text-purple-300 font-code">
+          <span>// #HimanshuSharma Birthday</span>
+          <span>// #BCA_Sem1_Rockstar</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="w-full mb-10">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="font-fun text-2xl font-bold text-slate-100">1st Sem Ki Gallery 📸</h3>
+          <p class="text-xs text-slate-400">College ke shuruati din & masti</p>
+        </div>
+        <button onclick="addPhotoPrompt()" class="text-xs font-code px-3 py-1.5 rounded-xl bg-purple-600/30 text-purple-300 border border-purple-500/40 hover:bg-purple-600/50 transition">
+          <i class="fa-solid fa-plus mr-1"></i> Add Photo
+        </button>
+      </div>
+
+      <!-- Photo Cards Container -->
+      <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        
+        <!-- Photo 1 -->
+        <div class="glass-card p-3 rounded-2xl group hover:border-pink-500/50 transition">
+          <div class="aspect-video bg-slate-800 rounded-xl overflow-hidden mb-2 relative">
+            <img src="img/1.jpg" alt="Memory 1" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            <span class="absolute bottom-2 left-2 text-[10px] font-code bg-black/60 px-2 py-0.5 rounded text-pink-300">First Day Vibes</span>
+          </div>
+          <p class="text-xs text-center text-slate-300 font-medium">BCA 1st Sem Orientation 🎓</p>
+        </div>
+
+        <!-- Photo 2 -->
+        <div class="glass-card p-3 rounded-2xl group hover:border-purple-500/50 transition">
+          <div class="aspect-video bg-slate-800 rounded-xl overflow-hidden mb-2 relative">
+            <img src="img/2.jpg" alt="Memory 2" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            <span class="absolute bottom-2 left-2 text-[10px] font-code bg-black/60 px-2 py-0.5 rounded text-cyan-300">First Prize 🏆</span>
+          </div>
+          <p class="text-xs text-center text-slate-300 font-medium">Chairman se First Prize leta Hue 💻</p>
+        </div>
+
+        <!-- Photo 3 -->
+        <div class="glass-card p-3 rounded-2xl group hover:border-cyan-500/50 transition">
+          <div class="aspect-video bg-slate-800 rounded-xl overflow-hidden mb-2 relative">
+            <img src="img/3.jpg" alt="Memory 3" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            <span class="absolute bottom-2 left-2 text-[10px] font-code bg-black/60 px-2 py-0.5 rounded text-emerald-300">College Canteen</span>
+          </div>
+          <p class="text-xs text-center text-slate-300 font-medium">Daily Canteen Adda & Samosa Treat ☕</p>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="w-full p-6 text-center text-xs text-slate-500 font-code border-t border-slate-800/80 z-20">
+    <p>Coded with <i class="fa-solid fa-heart text-pink-500 animate-ping"></i> for my best friend. Happy Birthday!</p>
+  </footer>
+
+  <div id="name-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card p-6 rounded-3xl max-w-sm w-full border border-purple-500/30">
+      <h3 class="text-lg font-bold font-fun text-purple-300 mb-2">Change Friend's Name</h3>
+      <p class="text-xs text-slate-400 mb-4">Type your friend's name to personalize the web page:</p>
+      
+      <input type="text" id="name-input" placeholder="e.g. Aman, Rahul, Priya..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-code text-sm mb-4 focus:outline-none focus:border-purple-500">
+      
+      <div class="flex gap-2 justify-end">
+        <button onclick="closeNameModal()" class="px-4 py-2 rounded-xl text-xs font-code text-slate-400 hover:bg-slate-800">Cancel</button>
+        <button onclick="saveFriendName()" class="px-5 py-2 rounded-xl text-xs font-code bg-purple-600 hover:bg-purple-700 text-white font-bold">Save Name</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State variables
+    let candlesLit = [true, true, true];
+    let audioPlaying = false;
+    let audioCtx = null;
+    let bgmInterval = null;
+
+    // Load custom name from local storage if available
+    window.onload = function() {
+      const savedName = localStorage.getItem('bday_friend_name');
+      if (savedName) {
+        document.getElementById('friend-name-display').innerText = savedName;
+      }
+      createBalloons();
+      
+      // Auto trigger confetti initial celebration blast after 1s
+      setTimeout(() => {
+        triggerConfetti();
+      }, 1000);
+    };
+
+    function blowCandle(index, e) {
+      if (e) e.stopPropagation();
+      
+      const flame = document.getElementById(`flame-${index}`);
+      const smoke = document.getElementById(`smoke-${index}`);
+      
+      if (flame && !flame.classList.contains('hidden')) {
+        flame.classList.add('hidden');
+        if (smoke) {
+          smoke.classList.remove('hidden');
+          setTimeout(() => smoke.classList.add('hidden'), 1500);
+        }
+        candlesLit[index - 1] = false;
+        playPopSound(600);
+
+        // Check if all candles blown
+        if (!candlesLit.includes(true)) {
+          document.getElementById('cake-instruction').innerText = "🎉 All candles blown! Now click 'Cut The Cake'!";
+          triggerConfetti();
+        }
+      }
+    }
+
+    function cutCake() {
+      // Extinguish all flames
+      [1, 2, 3].forEach(i => {
+        const flame = document.getElementById(`flame-${i}`);
+        if (flame) flame.classList.add('hidden');
+      });
+      
+      triggerConfetti();
+      playCheerSound();
+      
+      document.getElementById('cake-instruction').innerText = "🍰 Yummy! Cake Cut Successfully! Wish You Happy Birthday!";
+      
+      // Start background music if not already playing
+      if (!audioPlaying) {
+        toggleAudio();
+      }
+    }
+
+    function createBalloons() {
+      const colors = ['#ec4899', '#a855f7', '#38bdf8', '#4ade80', '#facc15'];
+      const container = document.getElementById('balloon-container');
+      
+      for (let i = 0; i < 12; i++) {
+        const balloon = document.createElement('div');
+        balloon.className = 'balloon';
+        const color = colors[i % colors.length];
+        
+        balloon.innerHTML = `
+          <svg width="50" height="65" viewBox="0 0 50 65">
+            <path d="M 25 0 C 40 0 50 15 50 32 C 50 50 30 60 25 60 C 20 60 0 50 0 32 C 0 15 10 0 25 0 Z" fill="${color}" opacity="0.85"/>
+            <polygon points="22,60 28,60 25,64" fill="${color}" />
+            <path d="M 25 64 Q 20 75 25 85" stroke="#94a3b8" stroke-width="1.5" fill="none"/>
+          </svg>
+        `;
+        
+        balloon.style.left = Math.random() * 90 + '%';
+        balloon.style.animationDelay = (Math.random() * 8) + 's';
+        balloon.style.animationDuration = (8 + Math.random() * 6) + 's';
+        
+        // Click balloon to pop
+        balloon.onclick = function(e) {
+          e.stopPropagation();
+          playPopSound(800 + Math.random() * 400);
+          balloon.style.transform = 'scale(1.5)';
+          balloon.style.opacity = '0';
+          setTimeout(() => {
+            balloon.remove();
+            // Replace balloon after pop
+            setTimeout(createBalloons, 3000);
+          }, 200);
+        };
+        
+        container.appendChild(balloon);
+      }
+    }
+
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        // Multi-stage confetti burst
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+          });
+        }, 200);
+
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+          });
+        }, 400);
+      }
+    }
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playPopSound(freq = 400) {
+      initAudioContext();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.1);
+    }
+
+    function playCheerSound() {
+      initAudioContext();
+      if (!audioCtx) return;
+
+      // Arpeggio sound FX on cheer
+      const notes = [261.63, 329.63, 392.00, 523.25, 659.25];
+      notes.forEach((freq, index) => {
+        setTimeout(() => {
+          playPopSound(freq);
+        }, index * 80);
+      });
+    }
+
+    function toggleAudio() {
+      initAudioContext();
+      const soundIcon = document.getElementById('sound-icon');
+      const soundText = document.getElementById('sound-text');
+
+      if (audioPlaying) {
+        // Stop music
+        clearInterval(bgmInterval);
+        audioPlaying = false;
+        soundIcon.className = "fa-solid fa-volume-xmark text-pink-400";
+        if (soundText) soundText.innerText = "Play BGM";
+      } else {
+        // Start playing synth Happy Birthday tune melody
+        audioPlaying = true;
+        soundIcon.className = "fa-solid fa-volume-high text-emerald-400 animate-pulse";
+        if (soundText) soundText.innerText = "Mute BGM";
+
+        const melody = [
+          { note: 261.63, duration: 300 }, // C4
+          { note: 261.63, duration: 300 }, // C4
+          { note: 293.66, duration: 600 }, // D4
+          { note: 261.63, duration: 600 }, // C4
+          { note: 349.23, duration: 600 }, // F4
+          { note: 329.63, duration: 1000 },// E4
+          
+          { note: 261.63, duration: 300 }, // C4
+          { note: 261.63, duration: 300 }, // C4
+          { note: 293.66, duration: 600 }, // D4
+          { note: 261.63, duration: 600 }, // C4
+          { note: 392.00, duration: 600 }, // G4
+          { note: 349.23, duration: 1000 } // F4
+        ];
+
+        let noteIdx = 0;
+        bgmInterval = setInterval(() => {
+          if (!audioPlaying) return;
+          const n = melody[noteIdx];
+          
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          
+          osc.type = 'triangle';
+          osc.frequency.value = n.note;
+          
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (n.duration / 1000));
+          
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          
+          osc.start();
+          osc.stop(audioCtx.currentTime + (n.duration / 1000));
+          
+          noteIdx = (noteIdx + 1) % melody.length;
+        }, 550);
+      }
+    }
+
+    function openNameModal() {
+      document.getElementById('name-modal').classList.remove('hidden');
+    }
+
+    function closeNameModal() {
+      document.getElementById('name-modal').classList.add('hidden');
+    }
+
+    function saveFriendName() {
+      const nameInput = document.getElementById('name-input').value.trim();
+      if (nameInput) {
+        document.getElementById('friend-name-display').innerText = nameInput;
+        localStorage.setItem('bday_friend_name', nameInput);
+      }
+      closeNameModal();
+    }
+
+    function addPhotoPrompt() {
+      const url = prompt("Apne dost ki photo ka image URL enter karein (ya sample image placeholder load karein):");
+      if (url) {
+        const grid = document.getElementById('gallery-grid');
+        const card = document.createElement('div');
+        card.className = 'glass-card p-3 rounded-2xl group hover:border-pink-500/50 transition';
+        card.innerHTML = `
+          <div class="aspect-video bg-slate-800 rounded-xl overflow-hidden mb-2 relative">
+            <img src="${url}" alt="Memory" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/600x400/311042/ec4899?text=New+Memory'">
+            <span class="absolute bottom-2 left-2 text-[10px] font-code bg-black/60 px-2 py-0.5 rounded text-pink-300">Special Memory</span>
+          </div>
+          <p class="text-xs text-center text-slate-300 font-medium">BFF Moment ❤️</p>
+        `;
+        grid.appendChild(card);
+      }
+    }
+  </script>
+</body>
+</html>
